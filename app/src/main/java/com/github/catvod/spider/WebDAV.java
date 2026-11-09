@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import okhttp3.Credentials;
+import okhttp3.Response;
+
 public class WebDAV extends Spider {
 
     private static List<Drive> drives;
@@ -183,11 +186,17 @@ public class WebDAV extends Spider {
         String key = url.contains("/") ? url.substring(0, url.indexOf("/")) : url;
         url = url.substring(key.length());
         Drive drive = getDrive(key);
-        Object[] result = new Object[3];
-        result[0] = 200;
-        result[1] = "application/octet-stream";
-        result[2] = drive.getWebdav().get(drive.getHost() + url, getHeaders(params));
-        return result;
+        drive.getWebdav(); // 先觸發 init()，否則 getHost() 用到的 path 尚未設置，會拼出重複路徑
+        Map<String, String> headers = getHeaders(params);
+        if (!drive.getUser().isEmpty()) headers.put("Authorization", Credentials.basic(drive.getUser(), drive.getPass()));
+        Response response = OkHttp.newCall(drive.getHost() + url, headers);
+        Map<String, String> respHeaders = new HashMap<>();
+        for (String name : response.headers().names()) {
+            if (name.equalsIgnoreCase("Transfer-Encoding") || name.equalsIgnoreCase("Connection")) continue;
+            respHeaders.put(name, response.header(name));
+        }
+        String contentType = response.header("Content-Type", "application/octet-stream");
+        return new Object[]{response.code(), contentType, response.body().byteStream(), respHeaders};
     }
 
     private static Map<String, String> getHeaders(Map<String, String> params) {
