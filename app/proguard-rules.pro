@@ -3,7 +3,6 @@
 -dontwarn org.slf4j.impl.StaticLoggerBinder
 
 # Spider
--keep class com.github.catvod.js.* { *; }
 -keep class com.github.catvod.crawler.* { *; }
 -keep class com.github.catvod.spider.* { public <methods>; }
 -keep class com.github.catvod.parser.* { public <methods>; }
@@ -22,17 +21,12 @@
 # Logger
 -keep class com.orhanobut.logger.** { *; }
 
-# QuickJS
--keep class com.whl.quickjs.** { *; }
-
 # Sardine
 -keep class com.thegrizzlylabs.sardineandroid.** { *; }
 
-# Smbj
+# XmlPull (pulled in by sardine)
 -dontwarn org.xmlpull.v1.**
 -dontwarn android.content.res.**
--keep class com.hierynomus.** { *; }
--keep class net.engio.mbassy.** { *; }
 
 # Zxing
 -keep class com.google.zxing.** { *; }
