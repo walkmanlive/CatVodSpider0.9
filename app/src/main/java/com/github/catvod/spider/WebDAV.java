@@ -186,7 +186,7 @@ public class WebDAV extends Spider {
         String key = url.contains("/") ? url.substring(0, url.indexOf("/")) : url;
         url = url.substring(key.length());
         Drive drive = getDrive(key);
-        drive.getWebdav(); // 先觸發 init()，否則 getHost() 用到的 path 尚未設置，會拼出重複路徑
+        drive.getWebdav(); // 先 init()，否則 getHost() 用到的 path 尚未設置，會拼出重複路徑
         Map<String, String> headers = getHeaders(params);
         String user = drive.getUser();
         String pass = drive.getPass();
